@@ -40,7 +40,6 @@ def index():
         else:
             result_text = "Лиц не обнаружено на изображении."
 
-        # Конвертируем изображение в base64 строку
         _, img_encoded = cv2.imencode('.png', image)
         img_base64 = base64.b64encode(img_encoded).decode('utf-8')
 
