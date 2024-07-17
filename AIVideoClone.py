@@ -1,10 +1,51 @@
+import os
 import cv2
 import numpy as np
-from flask import Flask, request, render_template
+import pyttsx3
+from flask import Flask, request, render_template, jsonify, send_from_directory
 import imghdr
 import base64
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'static'
+
+def text_to_speech(text, gender='neutral'):
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    
+    if gender == 'male':
+        engine.setProperty('voice', voices[0].id)
+    elif gender == 'female':
+        engine.setProperty('voice', voices[1].id)
+    
+    file_name = f"output_{text[:10]}.mp3"
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    engine.save_to_file(text, file_path)
+    engine.runAndWait()
+
+    return file_name
+
+def delete_file(filename):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"Deleted {filename}")
+    else:
+        print(f"File {filename} not found")
+
+@app.route('/synthesize', methods=['POST'])
+def synthesize():
+    data = request.json
+    text = data.get('text')
+    gender = data.get('gender', 'neutral')
+
+    file_name = text_to_speech(text, gender)
+
+    return jsonify({'status': 'success', 'file': file_name})
+
+@app.route('/audio/<filename>')
+def get_audio(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route("/", methods=["GET", "POST"])
 def index():

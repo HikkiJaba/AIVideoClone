@@ -3,14 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
-    <title>Face Detection</title>
+    <title>Text to Speech</title>
 </head>
 <body>
-    <h1>Загрузите изображение для проверки на лицо:</h1>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
-    </form>
+    <h1>Text to Speech</h1>
+    <textarea id="text" rows="4" cols="50"></textarea><br>
+    <label for="gender">Choose a voice:</label>
+    <select id="gender">
+        <option value="neutral">Neutral</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select><br>
+    <button onclick="synthesizeSpeech()">Play</button>
+    <audio id="audio" controls style="display:none;"></audio>
+
+    <script>
+        function synthesizeSpeech() {
+            const text = document.getElementById('text').value;
+            const gender = document.getElementById('gender').value;
+            
+            fetch('/synthesize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text, gender: gender })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const audio = document.getElementById('audio');
+                    audio.style.display = 'block';
+                    audio.src = '/audio/' + data.file;
+                    audio.play();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
