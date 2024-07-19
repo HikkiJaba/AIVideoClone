@@ -3,40 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech</title>
+    <title>Озвучка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        select, input[type="file"] {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #audio {
+            display: block;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        #error {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Text to Speech</h1>
-    <textarea id="text" rows="4" cols="50"></textarea><br>
-    <label for="gender">Choose a voice:</label>
-    <select id="gender">
-        <option value="neutral">Neutral</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-    </select><br>
-    <button onclick="synthesizeSpeech()">Play</button>
-    <audio id="audio" controls style="display:none;"></audio>
+    <div class="container">
+        <h1>Озвучка</h1>
+        <form id="synthesizeForm" enctype="multipart/form-data">
+            <textarea id="text" name="text" rows="4" placeholder="Введите текст"></textarea><br>
+            <label for="gender">Выбери голос:</label>
+            <select id="gender" name="gender">
+                <option value="neutral">Нейтральный</option>
+                <option value="male">Мужской</option>
+                <option value="female">Женский</option>
+            </select><br>
+            <label for="speaker_file">Загрузите свой голосовой файл:</label>
+            <input type="file" id="speaker_file" name="speaker_file" accept="audio/*"><br>
+            <button type="button" onclick="synthesizeSpeech()">Играть</button>
+        </form>
+        <audio id="audio" controls style="display:none;"></audio>
+        <div id="error"></div>
+    </div>
 
     <script>
         function synthesizeSpeech() {
-            const text = document.getElementById('text').value;
-            const gender = document.getElementById('gender').value;
-            
+            const formData = new FormData(document.getElementById('synthesizeForm'));
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = ''; // Очистить предыдущие ошибки
+            const audio = document.getElementById('audio');
+            audio.style.display = 'none';
+
             fetch('/synthesize', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: text, gender: gender })
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const audio = document.getElementById('audio');
                     audio.style.display = 'block';
-                    audio.src = '/audio/' + data.file;
+                    audio.src = data.file;
                     audio.play();
+                } else {
+                    errorDiv.innerHTML = data.message || 'Ошибка синтеза речи';
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorDiv.innerHTML = 'Ошибка синтеза речи';
             });
         }
     </script>
