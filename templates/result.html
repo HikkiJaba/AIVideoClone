@@ -3,11 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='result.css') }}">
-    <title>Результат</title>
+    <title>Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        img, video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        video {
+            max-width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ result }}</h1>
-    <img src="data:image/png;base64,{{ image }}" alt="Обнаруженные лица">
+    <div class="container">
+        <h1>{{ result }}</h1>
+        {% if image %}
+        <img src="data:image/png;base64,{{ image }}" alt="Uploaded Image">
+        {% endif %}
+        {% if video %}
+        <video controls>
+            <source src="{{ url_for('get_video', filename=video) }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        {% endif %}
+    </div>
 </body>
 </html>

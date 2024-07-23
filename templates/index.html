@@ -1,123 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Озвучка</title>
+    <title>Синтез речи и анимация лица</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
             padding: 0;
             background-color: #f4f4f4;
         }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 50%;
+            margin: auto;
+            overflow: hidden;
         }
-
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        select, input[type="file"] {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
+        header {
+            background: #50b3a2;
             color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #E8491D 3px solid;
+        }
+        header a, header a:visited {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        form div {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+        }
+        input[type="submit"] {
+            border: 0;
+            background: #333;
+            color: #fff;
+            padding: 10px 15px;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #audio {
-            display: block;
-            margin-top: 20px;
-            width: 100%;
-        }
-
-        #error {
-            color: red;
-            margin-top: 20px;
+        input[type="submit"]:hover {
+            background: #555;
         }
     </style>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <h1>Синтез речи и анимация лица</h1>
+        </div>
+    </header>
     <div class="container">
-        <h1>Озвучка</h1>
-        <form id="synthesizeForm" enctype="multipart/form-data">
-            <textarea id="text" name="text" rows="4" placeholder="Введите текст"></textarea><br>
-            <label for="gender">Выбери голос:</label>
-            <select id="gender" name="gender">
-                <option value="neutral">Нейтральный</option>
-                <option value="male">Мужской</option>
-                <option value="female">Женский</option>
-            </select><br>
-            <label for="speaker_file">Загрузите свой голосовой файл:</label>
-            <input type="file" id="speaker_file" name="speaker_file" accept="audio/*"><br>
-            <button type="button" onclick="synthesizeSpeech()">Играть</button>
+        <form action="/synthesize" method="post" enctype="multipart/form-data">
+            <div>
+                <label for="text">Введите текст:</label>
+                <textarea name="text" id="text" rows="4" cols="50" required></textarea>
+            </div>
+            <div>
+                <label for="speaker_file">Загрузить файл с голосом (опционально):</label>
+                <input type="file" name="speaker_file" id="speaker_file" accept=".wav">
+            </div>
+            <div>
+                <label for="image_file">Загрузить изображение:</label>
+                <input type="file" name="image_file" id="image_file" accept=".jpg, .jpeg, .png" required>
+            </div>
+            <div>
+                <input type="submit" value="Синтезировать и анимировать">
+            </div>
         </form>
-        <audio id="audio" controls style="display:none;"></audio>
-        <div id="error"></div>
+        <div id="result">
+            {% if result %}
+                <h2>Результат:</h2>
+                <p>{{ result }}</p>
+                {% if file %}
+                    <h3>Синтезированное аудио:</h3>
+                    <audio controls>
+                        <source src="{{ url_for('get_audio', filename=file) }}" type="audio/wav">
+                        Ваш браузер не поддерживает воспроизведение аудио.
+                    </audio>
+                {% endif %}
+                {% if image %}
+                    <h3>Анимированное изображение:</h3>
+                    <img src="{{ url_for('get_image', filename=image) }}" alt="Анимированное изображение">
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
-
-    <script>
-        function synthesizeSpeech() {
-            const formData = new FormData(document.getElementById('synthesizeForm'));
-            const errorDiv = document.getElementById('error');
-            errorDiv.innerHTML = ''; // Очистить предыдущие ошибки
-            const audio = document.getElementById('audio');
-            audio.style.display = 'none';
-
-            fetch('/synthesize', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    audio.style.display = 'block';
-                    audio.src = data.file;
-                    audio.play();
-                } else {
-                    errorDiv.innerHTML = data.message || 'Ошибка синтеза речи';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorDiv.innerHTML = 'Ошибка синтеза речи';
-            });
-        }
-    </script>
 </body>
 </html>
