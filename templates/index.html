@@ -1,107 +1,22 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Синтез речи и анимация лица</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            width: 50%;
-            margin: auto;
-            overflow: hidden;
-        }
-        header {
-            background: #50b3a2;
-            color: #fff;
-            padding-top: 30px;
-            min-height: 70px;
-            border-bottom: #E8491D 3px solid;
-        }
-        header a, header a:visited {
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-size: 16px;
-        }
-        header ul {
-            padding: 0;
-            list-style: none;
-        }
-        header li {
-            display: inline;
-            padding: 0 20px 0 20px;
-        }
-        form {
-            background: #fff;
-            padding: 20px;
-            margin-top: 30px;
-        }
-        form div {
-            margin-bottom: 10px;
-            padding: 5px;
-        }
-        label {
-            display: inline-block;
-            width: 200px;
-        }
-        input[type="submit"] {
-            border: 0;
-            background: #333;
-            color: #fff;
-            padding: 10px 15px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background: #555;
-        }
-    </style>
+    <title>Synthesize Text</title>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Синтез речи и анимация лица</h1>
-        </div>
-    </header>
-    <div class="container">
-        <form action="/synthesize" method="post" enctype="multipart/form-data">
-            <div>
-                <label for="text">Введите текст:</label>
-                <textarea name="text" id="text" rows="4" cols="50" required></textarea>
-            </div>
-            <div>
-                <label for="speaker_file">Загрузить файл с голосом (опционально):</label>
-                <input type="file" name="speaker_file" id="speaker_file" accept=".wav">
-            </div>
-            <div>
-                <label for="image_file">Загрузить изображение:</label>
-                <input type="file" name="image_file" id="image_file" accept=".jpg, .jpeg, .png" required>
-            </div>
-            <div>
-                <input type="submit" value="Синтезировать и анимировать">
-            </div>
-        </form>
-        <div id="result">
-            {% if result %}
-                <h2>Результат:</h2>
-                <p>{{ result }}</p>
-                {% if file %}
-                    <h3>Синтезированное аудио:</h3>
-                    <audio controls>
-                        <source src="{{ url_for('get_audio', filename=file) }}" type="audio/wav">
-                        Ваш браузер не поддерживает воспроизведение аудио.
-                    </audio>
-                {% endif %}
-                {% if image %}
-                    <h3>Анимированное изображение:</h3>
-                    <img src="{{ url_for('get_image', filename=image) }}" alt="Анимированное изображение">
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
+    <h1>Synthesize Text</h1>
+    <form action="/synthesize" method="post" enctype="multipart/form-data">
+        <label for="text">Text:</label>
+        <input type="text" id="text" name="text" required>
+        <br><br>
+        <label for="speaker_file">Speaker File:</label>
+        <input type="file" id="speaker_file" name="speaker_file">
+        <br><br>
+        <label for="image_file">Image File:</label>
+        <input type="file" id="image_file" name="image_file">
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
 </body>
 </html>
