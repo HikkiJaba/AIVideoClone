@@ -2,20 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Result</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        video {
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ result }}</h1>
-    {% if video %}
-        <h2>Video:</h2>
+    <div class="container">
+        <h1>Результат</h1>
         <video width="640" height="480" controls>
-            <source src="{{ url_for('download_file', filename=video) }}" type="video/mp4">
+            <source src="{{ video }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
-    {% endif %}
-    {% if image %}
-        <h2>Image:</h2>
-        <img src="{{ url_for('download_file', filename=image) }}" alt="Image">
-    {% endif %}
+    </div>
 </body>
 </html>

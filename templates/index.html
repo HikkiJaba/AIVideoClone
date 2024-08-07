@@ -2,21 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Synthesize Text</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Synthesis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="file"] {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin: 10px auto;
+            font-weight: bold;
+            color: #333;
+            max-width: 400px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Synthesize Text</h1>
-    <form action="/synthesize" method="post" enctype="multipart/form-data">
-        <label for="text">Text:</label>
-        <input type="text" id="text" name="text" required>
-        <br><br>
-        <label for="speaker_file">Speaker File:</label>
-        <input type="file" id="speaker_file" name="speaker_file">
-        <br><br>
-        <label for="image_file">Image File:</label>
-        <input type="file" id="image_file" name="image_file">
-        <br><br>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="container">
+        <h1>Загрузите текст, аудио и изображение</h1>
+        <form action="/synthesize" method="post" enctype="multipart/form-data">
+            <label for="text">Введите текст:</label>
+            <input type="text" id="text" name="text" placeholder="Введите текст" required>
+            
+            <label for="audio_file">Выберите аудиофайл:</label>
+            <input type="file" id="audio_file" name="audio_file" accept="audio/*" required>
+            
+            <label for="image_file">Выберите изображение:</label>
+            <input type="file" id="image_file" name="image_file" accept="image/*" required>
+            
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
 </body>
 </html>
